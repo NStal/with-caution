@@ -1,0 +1,7 @@
+git add .
+git commit -a -m "Before release"
+git push
+npm version patch
+npm publish
+
+exit 0
