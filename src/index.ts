@@ -10,4 +10,14 @@ export namespace CautionUtil {
             throw new Error(`Unhandled reason: ${args[0]}`)
         }
     }
+    export function error(reason: string, ...errors: Error[]) {
+        let error = new Error(reason)
+        let cur = error
+        for (let next of errors) {
+            cur.cause = next
+            cur = next
+        }
+        return error
+    }
 }
+export const CU = CautionUtil
