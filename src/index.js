@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CautionUtil = void 0;
+exports.CU = exports.CautionUtil = void 0;
 ///<reference path="./type.d.ts"/>
 var CautionUtil;
 (function (CautionUtil) {
@@ -14,4 +14,15 @@ var CautionUtil;
         }
     }
     CautionUtil.never = never;
+    function error(reason, ...errors) {
+        let error = new Error(reason);
+        let cur = error;
+        for (let next of errors) {
+            cur.cause = next;
+            cur = next;
+        }
+        return error;
+    }
+    CautionUtil.error = error;
 })(CautionUtil || (exports.CautionUtil = CautionUtil = {}));
+exports.CU = CautionUtil;
