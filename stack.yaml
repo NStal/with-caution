@@ -1,3 +1,4 @@
 name: with-caution
-dependencies: 
+dependencies:
 dev:
+  - tsc -w
