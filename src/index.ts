@@ -14,6 +14,8 @@ export namespace CautionUtil {
         let error = new Error(reason)
         let cur = error
         for (let next of errors) {
+            cur.name = cur.name
+            cur.message = cur.message
             cur.cause = next
             cur = next
         }
