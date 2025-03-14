@@ -5,7 +5,14 @@ exports.CU = exports.CautionUtil = void 0;
 var CautionUtil;
 (function (CautionUtil) {
     function never(...args) {
-        if (typeof args[1] == "string") {
+        if (args[2]) {
+            let reason = args[2];
+            let target = args[0];
+            let key = args[1];
+            let value = target?.[key];
+            throw new Error(`Unhandled reason: ${reason} => get value ${value}`);
+        }
+        else if (typeof args[1] == "string") {
             let reason = args[1];
             throw new Error(`Unhandled reason: ${reason} => get value ${args[0]}`);
         }
@@ -15,9 +22,16 @@ var CautionUtil;
     }
     CautionUtil.never = never;
     function error(reason, ...errors) {
-        let error = new Error(reason);
+        let messages = [`Reason: ${reason}`];
+        for (let error of errors) {
+            messages.push(`Caused by: ${error.name}`);
+            messages.push(error.message);
+        }
+        let error = new Error(messages.join("\n"));
         let cur = error;
         for (let next of errors) {
+            cur.name = cur.name;
+            cur.message = cur.message;
             cur.cause = next;
             cur = next;
         }

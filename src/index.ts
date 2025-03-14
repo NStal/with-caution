@@ -19,7 +19,12 @@ export namespace CautionUtil {
         }
     }
     export function error(reason: string, ...errors: Error[]) {
-        let error = new Error(reason)
+        let messages = [`Reason: ${reason}`]
+        for (let error of errors) {
+            messages.push(`Caused by: ${error.name}`)
+            messages.push(error.message)
+        }
+        let error = new Error(messages.join("\n"))
         let cur = error
         for (let next of errors) {
             cur.name = cur.name
