@@ -9,7 +9,7 @@ var CautionUtil;
             let reason = args[2];
             let target = args[0];
             let key = args[1];
-            let value = target === null || target === void 0 ? void 0 : target[key];
+            let value = target?.[key];
             throw new Error(`Unhandled reason: ${reason} => get value ${value}`);
         }
         else if (typeof args[1] == "string") {
