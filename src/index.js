@@ -38,6 +38,14 @@ var CautionUtil;
         return error;
     }
     CautionUtil.error = error;
+    // Just throw, we should decide it latter.
+    function tbd(reason, ...errors) {
+        if (reason) {
+            throw CautionUtil.error(reason, ...errors);
+        }
+        return;
+    }
+    CautionUtil.tbd = tbd;
 })(CautionUtil || (exports.CautionUtil = CautionUtil = {}));
 exports.CU = CautionUtil;
 //# sourceMappingURL=index.js.map

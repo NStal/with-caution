@@ -34,5 +34,12 @@ export namespace CautionUtil {
         }
         return error
     }
+    // Just throw, we should decide it latter.
+    export function tbd(reason: string, ...errors: Error[]) {
+        if (reason) {
+            throw CautionUtil.error(reason, ...errors)
+        }
+        return
+    }
 }
 export const CU = CautionUtil
