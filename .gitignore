@@ -1,2 +1,12 @@
 node_modules
 *.log
+.tsbuildinfo
+*.tar
+*.tar.gz
+dist
+temp
+.env
+
+*.js
+*.js.map
+yarn.lock
