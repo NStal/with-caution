@@ -1,4 +1,4 @@
 name: with-caution
 dependencies:
 dev:
-  - tsc -w
+  - builtIn: "tsc"
