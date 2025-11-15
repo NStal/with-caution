@@ -23,6 +23,7 @@ var CautionUtil;
     CautionUtil.never = never;
     function error(reason, ...errors) {
         let messages = [`Reason: ${reason}`];
+        errors = errors.filter(Boolean);
         for (let error of errors) {
             messages.push(`Caused by: ${error.name}`);
             messages.push(error.message);

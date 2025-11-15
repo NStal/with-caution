@@ -20,6 +20,7 @@ export namespace CautionUtil {
     }
     export function error(reason: string, ...errors: Error[]) {
         let messages = [`Reason: ${reason}`]
+        errors = errors.filter(Boolean)
         for (let error of errors) {
             messages.push(`Caused by: ${error.name}`)
             messages.push(error.message)
