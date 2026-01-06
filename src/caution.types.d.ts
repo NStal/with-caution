@@ -26,5 +26,12 @@ declare namespace Caution {
     type Nully<T> = T | null
     // Eventually all IntendedThrow should be catched and considered.
     // Unintended throw is always an bug, and should always crash the program if affordable.
-
+    type ErrorData = {
+        name: string
+        message: string
+        stack?: string
+        cause?: ErrorLike
+    }
+    type ErrorString = string
+    type ErrorLike = ErrorData | ErrorString | Error
 }

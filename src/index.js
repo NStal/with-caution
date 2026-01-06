@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CU = exports.CautionUtil = void 0;
-///<reference path="./type.d.ts"/>
+///<reference path="./caution.types.d.ts"/>
 var CautionUtil;
 (function (CautionUtil) {
     function never(...args) {
@@ -47,6 +47,32 @@ var CautionUtil;
         return;
     }
     CautionUtil.tbd = tbd;
+    function toErrorData(error, keepStack = true) {
+        if (!error)
+            return null;
+        if (typeof error == "string") {
+            return {
+                name: "Error",
+                message: error,
+            };
+        }
+        return {
+            name: error.name || "Unknown",
+            message: error.message || "",
+            stack: keepStack ? error.stack || "" : undefined,
+            cause: error.cause ? toErrorData(error.cause) : undefined,
+        };
+    }
+    CautionUtil.toErrorData = toErrorData;
+    function toError(like) {
+        let data = toErrorData(like);
+        let error = new Error(data.message, {
+            cause: data.cause ? toError(data.cause) : undefined,
+        });
+        error.stack = data.stack || "Stack truncated";
+        return error;
+    }
+    CautionUtil.toError = toError;
 })(CautionUtil || (exports.CautionUtil = CautionUtil = {}));
 exports.CU = CautionUtil;
 //# sourceMappingURL=index.js.map

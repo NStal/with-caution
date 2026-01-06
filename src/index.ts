@@ -1,4 +1,4 @@
-///<reference path="./type.d.ts"/>
+///<reference path="./caution.types.d.ts"/>
 export namespace CautionUtil {
     export function never(reason: never): never;
     export function never(sth: never, reason: string): never;
@@ -41,6 +41,29 @@ export namespace CautionUtil {
             throw CautionUtil.error(reason, ...errors)
         }
         return
+    }
+    export function toErrorData(error: Caution.ErrorLike, keepStack: boolean = true): Caution.ErrorData {
+        if (!error) return null
+        if (typeof error == "string") {
+            return {
+                name: "Error",
+                message: error,
+            }
+        }
+        return {
+            name: error.name || "Unknown",
+            message: error.message || "",
+            stack: keepStack ? error.stack || "" : undefined,
+            cause: error.cause ? toErrorData(error.cause as Caution.ErrorLike) : undefined,
+        }
+    }
+    export function toError(like: Caution.ErrorLike): Error {
+        let data = toErrorData(like)
+        let error = new Error(data.message, {
+            cause: data.cause ? toError(data.cause) : undefined,
+        })
+        error.stack = data.stack || "Stack truncated"
+        return error
     }
 }
 export const CU = CautionUtil
