@@ -57,12 +57,16 @@ export namespace CautionUtil {
             cause: error.cause ? toErrorData(error.cause as Caution.ErrorLike) : undefined,
         }
     }
-    export function toError(like: Caution.ErrorLike): Error {
+    export function toError(like: Caution.ErrorLike, stackMissingHint?: string): Error {
         let data = toErrorData(like)
         let error = new Error(data.message, {
             cause: data.cause ? toError(data.cause) : undefined,
         })
-        error.stack = data.stack || "Stack truncated"
+        if (data.stack) {
+            error.stack += "\n" + data.stack
+        } else {
+            data.stack += "\n" + (stackMissingHint || "Stack missing from data")
+        }
         return error
     }
 }

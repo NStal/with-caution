@@ -64,12 +64,17 @@ var CautionUtil;
         };
     }
     CautionUtil.toErrorData = toErrorData;
-    function toError(like) {
+    function toError(like, stackMissingHint) {
         let data = toErrorData(like);
         let error = new Error(data.message, {
             cause: data.cause ? toError(data.cause) : undefined,
         });
-        error.stack = data.stack || "Stack truncated";
+        if (data.stack) {
+            error.stack += "\n" + data.stack;
+        }
+        else {
+            data.stack += "\n" + (stackMissingHint || "Stack missing from data");
+        }
         return error;
     }
     CautionUtil.toError = toError;
