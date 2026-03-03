@@ -42,7 +42,18 @@ var CautionUtil;
     // Just throw, we should decide it latter.
     function tbd(reason, ...errors) {
         if (reason) {
-            throw CautionUtil.error(reason, ...errors);
+            let error = CautionUtil.error(reason, ...errors);
+            if (Error["captureStackTrace"]) {
+                Error.captureStackTrace(error, CautionUtil.tbd);
+            }
+            else {
+                const dropFrame = 2;
+                const lines = error.stack.split('\n');
+                const head = lines[0];
+                const rest = lines.slice(1 + dropFrame);
+                error.stack = [head, ...rest].join('\n');
+            }
+            throw error;
         }
         return;
     }
@@ -78,6 +89,35 @@ var CautionUtil;
         return error;
     }
     CautionUtil.toError = toError;
+    // Assert result to be no error
+    function yah(caution) {
+        let [res, reason, ...errors] = caution;
+        if (reason) {
+            let error = CautionUtil.error(reason, ...errors);
+            if (Error["captureStackTrace"]) {
+                try {
+                    delete error.stack;
+                }
+                catch { }
+                Error.captureStackTrace(error, CautionUtil.yah);
+            }
+            else {
+                const dropFrame = 2;
+                const lines = error.stack.split('\n');
+                const head = lines[0];
+                const rest = lines.slice(1 + dropFrame);
+                error.stack = [head, ...rest].join('\n');
+            }
+            throw error;
+        }
+        return res;
+    }
+    CautionUtil.yah = yah;
+    function res(caution) {
+        let [res, reason, ...errors] = caution;
+        return res;
+    }
+    CautionUtil.res = res;
 })(CautionUtil || (exports.CautionUtil = CautionUtil = {}));
 exports.CU = CautionUtil;
 //# sourceMappingURL=index.js.map

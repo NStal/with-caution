@@ -38,7 +38,18 @@ export namespace CautionUtil {
     // Just throw, we should decide it latter.
     export function tbd(reason: string, ...errors: Error[]) {
         if (reason) {
-            throw CautionUtil.error(reason, ...errors)
+            let error = CautionUtil.error(reason, ...errors)
+            if (Error["captureStackTrace"]) {
+                (Error as any).captureStackTrace(error, CautionUtil.tbd)
+            } else {
+                const dropFrame = 2
+                const lines = error.stack.split('\n')
+
+                const head = lines[0]
+                const rest = lines.slice(1 + dropFrame)
+                error.stack = [head, ...rest].join('\n')
+            }
+            throw error
         }
         return
     }
@@ -68,6 +79,29 @@ export namespace CautionUtil {
             data.stack += "\n" + (stackMissingHint || "Stack missing from data")
         }
         return error
+    }
+    // Assert result to be no error
+    export function yah<T, TReason extends string = string, TError extends Error = Error>(caution: Caution.Res<T, TReason, TError>): T {
+        let [res, reason, ...errors] = caution
+        if (reason) {
+            let error = CautionUtil.error(reason, ...errors)
+            if (Error["captureStackTrace"]) {
+                try { delete (error as any).stack } catch { }
+                (Error as any).captureStackTrace(error, CautionUtil.yah)
+            } else {
+                const dropFrame = 2
+                const lines = error.stack.split('\n')
+                const head = lines[0]
+                const rest = lines.slice(1 + dropFrame)
+                error.stack = [head, ...rest].join('\n')
+            }
+            throw error
+        }
+        return res
+    }
+    export function res<T, TReason extends string = string, TError extends Error = Error>(caution: Caution.Res<T, TReason, TError>): T {
+        let [res, reason, ...errors] = caution
+        return res
     }
 }
 export const CU = CautionUtil
