@@ -1,0 +1,106 @@
+export namespace CautionUtil {
+    export function never(reason: never): never;
+    export function never(sth: never, reason: string): never;
+    export function never<T>(target: T, key: keyof T, reason: string): never;
+    export function never(...args: any[]) {
+        if (args[2]) {
+            let reason = args[2]
+            let target = args[0]
+            let key = args[1]
+            let value = target?.[key]
+            throw new Error(`Unhandled reason: ${reason} => get value ${value}`)
+        }
+        else if (typeof args[1] == "string") {
+            let reason = args[1]
+            throw new Error(`Unhandled reason: ${reason} => get value ${args[0]}`)
+        } else {
+            throw new Error(`Unhandled reason: ${args[0]}`)
+        }
+    }
+    export function error(reason: string, ...errors: Error[]) {
+        let messages = [`Reason: ${reason}`]
+        errors = errors.filter(Boolean)
+        for (let error of errors) {
+            messages.push(`Caused by: ${error.name}`)
+            messages.push(error.message)
+        }
+        let error = new Error(messages.join("\n"))
+        let cur = error
+        for (let next of errors) {
+            cur.name = cur.name
+            cur.message = cur.message
+            cur.cause = next
+            cur = next
+        }
+        return error
+    }
+    // Just throw, we should decide it latter.
+    export function tbd(reason: string, ...errors: Error[]) {
+        if (reason) {
+            let error = CautionUtil.error(reason, ...errors)
+            if (Error["captureStackTrace"]) {
+                (Error as any).captureStackTrace(error, CautionUtil.tbd)
+            } else {
+                const dropFrame = 2
+                const lines = error.stack.split('\n')
+
+                const head = lines[0]
+                const rest = lines.slice(1 + dropFrame)
+                error.stack = [head, ...rest].join('\n')
+            }
+            throw error
+        }
+        return
+    }
+    export function toErrorData(error: Caution.ErrorLike, keepStack: boolean = true): Caution.ErrorData {
+        if (!error) return null
+        if (typeof error == "string") {
+            return {
+                name: "Error",
+                message: error,
+            }
+        }
+        return {
+            name: error.name || "Unknown",
+            message: error.message || "",
+            stack: keepStack ? error.stack || "" : undefined,
+            cause: error.cause ? toErrorData(error.cause as Caution.ErrorLike) : undefined,
+        }
+    }
+    export function toError(like: Caution.ErrorLike, stackMissingHint?: string): Error {
+        let data = toErrorData(like)
+        let error = new Error(data.message, {
+            cause: data.cause ? toError(data.cause) : undefined,
+        })
+        if (data.stack) {
+            error.stack += "\n" + data.stack
+        } else {
+            data.stack += "\n" + (stackMissingHint || "Stack missing from data")
+        }
+        return error
+    }
+    // Assert result to be no error
+    export function yah<T, TReason extends string = string, TError extends Error = Error>(caution: Caution.Res<T, TReason, TError>): T {
+        let [res, reason, ...errors] = caution
+        if (reason) {
+            let error = CautionUtil.error(reason, ...errors)
+            if (Error["captureStackTrace"]) {
+                try { delete (error as any).stack } catch { }
+                (Error as any).captureStackTrace(error, CautionUtil.yah)
+            } else {
+                const dropFrame = 2
+                const lines = error.stack.split('\n')
+                const head = lines[0]
+                const rest = lines.slice(1 + dropFrame)
+                error.stack = [head, ...rest].join('\n')
+            }
+            throw error
+        }
+        return res
+    }
+    export function res<T, TReason extends string = string, TError extends Error = Error>(caution: Caution.Res<T, TReason, TError>): T {
+        let [res, reason, ...errors] = caution
+        return res
+    }
+}
+export const CU = CautionUtil

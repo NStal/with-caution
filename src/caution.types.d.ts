@@ -1,6 +1,7 @@
 declare namespace Caution {
     // We have intentded thrown, or unintended.
-    type Res<T = any, TReason extends string = string, TError extends Error = Error> = [T, TReason?, ...TError[]]
+    type BuiltInReason = "Unknown" | "Abort"
+    type Res<T = any, TReason extends string = string, TError extends Error = Error> = [T, (TReason | BuiltInReason)?, ...TError[]]
     type WithCautionFunction<T = any, TReason extends string = string, TError extends Error = Error> = ((...args: any[]) => Res<T, TReason, TError>) | ((...args: any[]) => Promise<Res<T, TReason, TError>>)
     type ReasonOf<TFn extends WithCautionFunction> = TFn extends (...args: any[]) => Res<any, infer R, any> ? R
         : never | TFn extends (...args: any[]) => Promise<Res<any, infer R>> ? R : never;
