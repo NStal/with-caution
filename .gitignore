@@ -7,6 +7,5 @@ dist
 temp
 .env
 
-*.js
 *.js.map
 yarn.lock
