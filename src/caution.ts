@@ -80,8 +80,8 @@ export namespace CautionUtil {
         return error
     }
     // Assert result to be no error
-    export function yah<T, TReason extends string = string, TError extends Error = Error>(caution: Caution.Res<T, TReason, TError>): T {
-        let [res, reason, ...errors] = caution
+    export async function yah<T, TReason extends string = string, TError extends Error = Error>(caution: Caution.Res<T, TReason, TError> | Promise<Caution.Res<T, TReason, TError>>): Promise<T> {
+        let [res, reason, ...errors] = await caution
         if (reason) {
             let error = CautionUtil.error(reason, ...errors)
             if (Error["captureStackTrace"]) {

@@ -35,4 +35,9 @@ declare namespace Caution {
     }
     type ErrorString = string
     type ErrorLike = ErrorData | ErrorString | Error
+    type EncapsulatedOutput<TOutput = any, TReason extends string = string> = {
+        ret?: TOutput
+        reason?: TReason
+        errors?: ErrorLike[]
+    }
 }

@@ -89,8 +89,8 @@ var CautionUtil;
     }
     CautionUtil.toError = toError;
     // Assert result to be no error
-    function yah(caution) {
-        let [res, reason, ...errors] = caution;
+    async function yah(caution) {
+        let [res, reason, ...errors] = await caution;
         if (reason) {
             let error = CautionUtil.error(reason, ...errors);
             if (Error["captureStackTrace"]) {
