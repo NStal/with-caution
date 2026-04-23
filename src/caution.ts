@@ -52,6 +52,9 @@ export namespace CautionUtil {
         }
         return
     }
+    export function toErrorDatas(errors: Caution.ErrorLike[], keepStack: boolean = undefined): Caution.ErrorData[] {
+        return errors.map(error => toErrorData(error, keepStack))
+    }
     export function toErrorData(error: Caution.ErrorLike, keepStack: boolean = true): Caution.ErrorData {
         if (!error) return null
         if (typeof error == "string") {

@@ -57,6 +57,10 @@ var CautionUtil;
         return;
     }
     CautionUtil.tbd = tbd;
+    function toErrorDatas(errors, keepStack = undefined) {
+        return errors.map(error => toErrorData(error, keepStack));
+    }
+    CautionUtil.toErrorDatas = toErrorDatas;
     function toErrorData(error, keepStack = true) {
         if (!error)
             return null;
